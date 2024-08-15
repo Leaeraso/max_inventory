@@ -1,0 +1,36 @@
+package settings
+
+import (
+	_ "embed"
+
+	"gopkg.in/yaml.v3"
+)
+
+//go:embed settings.yaml
+
+//go embed va a cargar el archivo y lo va a poner dentro de esta variable
+var settingsFile []byte
+
+type DatabaseConfig struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `ymal:"password"`
+	Name     string `yaml:"name"`
+}
+
+type Settings struct {
+	Port string `ymal:"port"`
+	DB   DatabaseConfig `yaml:"database"`
+}
+
+func New() (*Settings, error) {
+	var s Settings
+
+	err := yaml.Unmarshal(settingsFile, &s);
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, nil
+}
