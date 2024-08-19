@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/Leaeraso/max_inventory/database"
+	"github.com/Leaeraso/max_inventory/internal/repository"
+	"github.com/Leaeraso/max_inventory/internal/service"
 	"github.com/Leaeraso/max_inventory/settings"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/fx"
@@ -16,6 +18,8 @@ func main() {
 			context.Background,
 			settings.New,
 			database.New,
+			repository.New,
+			service.New,
 		),
 		// dentro de invoke se ejecutan los comandos antes de que la aplicacion empiece a correr
 		fx.Invoke(
