@@ -28,6 +28,9 @@ func (r *repo) GetUserByEmail(ctx context.Context, email string) (*entity.User, 
 	u := &entity.User{}
 
 	err := r.db.GetContext(ctx, u, qryGetUserByEmail, email)
+	if err != nil {
+		return nil, err
+	}
 
-	return u, err
+	return u, nil
 }

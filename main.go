@@ -7,7 +7,6 @@ import (
 	"github.com/Leaeraso/max_inventory/internal/repository"
 	"github.com/Leaeraso/max_inventory/internal/service"
 	"github.com/Leaeraso/max_inventory/settings"
-	"github.com/jmoiron/sqlx"
 	"go.uber.org/fx"
 )
 
@@ -23,10 +22,19 @@ func main() {
 		),
 		// dentro de invoke se ejecutan los comandos antes de que la aplicacion empiece a correr
 		fx.Invoke(
-			func (db *sqlx.DB) {
-				_, err := db.Query("select * from users")
+			func(ctx context.Context, serv service.Service) {
+				err := serv.RegisterUser(ctx, "my@email.com", "myname", "mypassword")
 				if err != nil {
 					panic(err)
+				}
+
+				u, err := serv.LoginUser(ctx, "my@email.com", "mypassword")
+				if err != nil {
+					panic(err)
+				}
+
+				if u.Name != "myname" {
+					panic("wrong name")
 				}
 			},
 		),

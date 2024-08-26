@@ -9,11 +9,12 @@ import (
 )
 
 var (
-	ErrUserAlreadyExists error = errors.New("user already exists")
+	ErrUserAlreadyExists  error = errors.New("user already exists")
 	ErrInvalidCredentials error = errors.New("invalid credentials")
 )
+
 func (s *serv) RegisterUser(ctx context.Context, email, name, password string) error {
-	
+
 	u, _ := s.repo.GetUserByEmail(ctx, email)
 	if u != nil {
 		return ErrUserAlreadyExists
@@ -25,7 +26,7 @@ func (s *serv) RegisterUser(ctx context.Context, email, name, password string) e
 	}
 
 	pass := encryption.ToBase64(bb)
-	
+
 	return s.repo.SaveUser(ctx, email, name, pass)
 }
 
@@ -50,8 +51,8 @@ func (s *serv) LoginUser(ctx context.Context, email, password string) (*models.U
 	}
 
 	return &models.User{
-		ID: u.ID,
+		ID:    u.ID,
 		Email: u.Email,
-		Name: u.Name,
+		Name:  u.Name,
 	}, nil
 }
