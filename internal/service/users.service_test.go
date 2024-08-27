@@ -24,6 +24,10 @@ func TestMain(m *testing.M) {
 	repo.On("GetUserByEmail", mock.Anything, "test@exists.com").Return(u, nil)
 	repo.On("SaveUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
+	repo.On("GetUserRoles", mock.Anything, int64(1)).Return([]entity.UserRole{{UserID: 1, RoleID: 1}}, nil)
+	repo.On("SaveUserRole", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	repo.On("RemoveUserRole", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	s = New(repo)
 
 	code := m.Run()
@@ -112,4 +116,81 @@ func TestLoginUser(t *testing.T) {
 			},
 		)
 	}
+}
+
+func TestAddUserRole(t *testing.T) {
+	testCases := []struct {
+		Name     string
+		UserID   int64
+		RoleID   int64
+		Expected error
+	}{
+		{
+			Name:     "AddUserRole_Success",
+			UserID:   1,
+			RoleID:   2,
+			Expected: nil,
+		},
+		{
+			Name:     "AddUserRoel_UserAlreadyHaveRole",
+			UserID:   1,
+			RoleID:   1,
+			Expected: ErrRoleAlreadyAdded,
+		},
+	}
+
+	ctx := context.Background()
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Parallel()
+			repo.Mock.Test(t)
+
+			err := s.AddUserRole(ctx, tc.UserID, tc.RoleID)
+			if err != tc.Expected {
+				t.Errorf("expected error %v, got %v", tc.Expected, err)
+			}
+		})
+	}
+}
+
+func TestRemoveUserRole(t *testing.T) {
+	testCases := []struct {
+		Name     string
+		UserID   int64
+		RoleID   int64
+		Expected error
+	}{
+		{
+			Name:     "RemoveUserRole_Success",
+			UserID:   1,
+			RoleID:   1,
+			Expected: nil,
+		},
+		{
+			Name:     "RemoveUserRole_UserDoesNotHaveRole",
+			UserID:   1,
+			RoleID:   3,
+			Expected: ErrRoleNotFound,
+		},
+	}
+
+	ctx := context.Background()
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.Name, func(t *testing.T) {
+			t.Parallel()
+			repo.Mock.Test(t)
+
+			err := s.RemoveUserRole(ctx, tc.UserID, tc.RoleID)
+			if err != tc.Expected {
+				t.Errorf("expected error %v, got %v", tc.Expected, err)
+			}
+		})
+	}
+
 }
