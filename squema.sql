@@ -34,6 +34,6 @@ CREATE TABLE user_role (
   FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-INSERT INTO roles (name) VALUES ('admin');
-INSERT INTO roles (name) VALUES ('seller');
-INSERT INTO roles (name) VALUES ('customer');
+INSERT INTO roles (id, name) VALUES (1, 'admin');
+INSERT INTO roles (id, name) VALUES (2, 'seller');
+INSERT INTO roles (id, name) VALUES (3, 'customer');
